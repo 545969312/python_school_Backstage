@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.middleware.CorsMiddleware',  # 跨域问题的中间件解决方式
 ]
 
 ROOT_URLCONF = 'python_school.urls'
@@ -126,5 +127,6 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'VERSION_PARAM': 'version',
     'DEFAULT_VERSION': 'v1',
-    'ALLOWED_VERSIONS': ['v1', 'v2']
+    'ALLOWED_VERSIONS': ['v1', 'v2'],
+    # 'PAGE_SIZE': 10  # 分页配置
 }
