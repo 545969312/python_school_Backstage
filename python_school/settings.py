@@ -128,5 +128,8 @@ REST_FRAMEWORK = {
     'VERSION_PARAM': 'version',
     'DEFAULT_VERSION': 'v1',
     'ALLOWED_VERSIONS': ['v1', 'v2'],
-    # 'PAGE_SIZE': 10  # 分页配置
+    # 'PAGE_SIZE': 10  # 分页配置,
+    'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser', ],
 }
+
+SHOP_CAR = 'shop_car_%s_%s'

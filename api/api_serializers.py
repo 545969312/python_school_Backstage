@@ -56,7 +56,7 @@ class CourseSerializerC(serializers.ModelSerializer):
 
     def get_price_policy(self, row):
         price_list = row.price_policy.all()
-        return [{'price': item.price, 'valid_period': item.valid_period} for item in price_list]
+        return [{'price_policy_id': item.object_id, 'price': item.price, 'valid_period': item.valid_period} for item in price_list]
 
     def get_asked_question(self, row):
         asked_question_list = row.asked_question.all()

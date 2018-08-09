@@ -6,10 +6,10 @@ urlpatterns = [
     url(r'course_detail/$', course_detail.CourseDetail.as_view()),
     url(r'query_all/(?P<condition>\w+)/', query_all.QueryAll.as_view()),
 
-    url(r'shop_car/$', shop_car.ShopCar.as_view({'get': 'list', 'post': 'create'})),
-    url(r'shop_car/(?P<pk>\d+)/$', shop_car.ShopCar.as_view({'get': 'list',
-                                                             'put': 'update',
-                                                             'delete': 'destroy'
-                                                             })),
+    url(r'shop_car/$', shop_car.ShopCar.as_view({'get': 'list',
+                                                 'post': 'create',
+                                                 'put': 'update',
+                                                 'delete': 'destroy'
+                                                 })),
 ]
 
