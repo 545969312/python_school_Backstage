@@ -1,4 +1,6 @@
+from django.shortcuts import HttpResponse
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSetMixin
 from rest_framework.response import Response
 from api.api_serializers import CourseSerializer
 from api import models
@@ -19,4 +21,6 @@ class Course(APIView):
         course = models.Course.objects.all()
         course_obj = CourseSerializer(course, many=True)  # 序列化文章
         res['data'] = course_obj.data
+
+
         return Response(res)

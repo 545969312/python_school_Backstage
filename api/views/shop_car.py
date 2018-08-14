@@ -1,19 +1,22 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSetMixin
-from rest_framework.pagination import PageNumberPagination
-from api.api_serializers import CourseSerializerC
+
 from api.utils.response import BaseResponse
+from api.utils.user_auth import UserAuthentication
 from api import models
-from redis import Redis
+
 from django.conf import settings
 import json
 
-CONN = Redis(host='192.168.11.121', port=6379)
-ID = 1
+from django_redis import get_redis_connection
+CONN = get_redis_connection("default")
+
 
 
 class ShopCar(ViewSetMixin, APIView):
+
+    authentication_classes = [UserAuthentication, ]
 
     def list(self, request, *args, **kwargs):
 
@@ -21,8 +24,9 @@ class ShopCar(ViewSetMixin, APIView):
 
         try:
             # 拿到用户所有购物信息
-            pattern = settings.SHOP_CAR % (ID, '*')
+            pattern = settings.SHOP_CAR % (request.user.id, '*')
             user_shop_list = CONN.keys(pattern)
+            print(user_shop_list)
             user_shop_course_list = []
             for key in user_shop_list:
 
@@ -35,6 +39,9 @@ class ShopCar(ViewSetMixin, APIView):
                 }
 
                 user_shop_course_list.append(temp)
+
+
+
             ret.data = user_shop_course_list
 
         except Exception as e:
@@ -78,7 +85,7 @@ class ShopCar(ViewSetMixin, APIView):
         # 3. 把商品和价格策略信息放入购物车 SHOPPING_CAR
 
         # 写进购物车之前先看看购物车里面的容量是否达到了上限
-        pattern = settings.SHOP_CAR % (ID, '*')
+        pattern = settings.SHOP_CAR % (request.user.id, '*')
         keys = CONN.keys(pattern)
         if keys and len(keys) >= 1000:
             ret.code = 0
@@ -86,7 +93,7 @@ class ShopCar(ViewSetMixin, APIView):
             return Response(ret.dict)
 
         # 然后添加课程到购物车
-        key = settings.SHOP_CAR % (ID, course_id)
+        key = settings.SHOP_CAR % (request.user.id, course_id)
         CONN.hset(key, 'id', course_id)
         CONN.hset(key, 'name', course_obj.name)
         CONN.hset(key, 'img', course_obj.course_img)
@@ -115,7 +122,7 @@ class ShopCar(ViewSetMixin, APIView):
             course_id = ret.get('id')
             price_policy_id = ret.get('price_policy_id')
             # key = 'shopping_car_%s_%s' %(USER_ID,course_id,)
-            key = settings.LUFFY_SHOPPING_CAR % (ID, course_id,)
+            key = settings.LUFFY_SHOPPING_CAR % (request.user.id, course_id,)
 
             if not CONN.exists(key):
                 res.code = 10007
@@ -150,7 +157,7 @@ class ShopCar(ViewSetMixin, APIView):
             courseid = request.data.get('courseid')
 
             # key = "shopping_car_%s_%s" % (USER_ID,courseid)
-            key = settings.LUFFY_SHOPPING_CAR % (ID, courseid,)
+            key = settings.LUFFY_SHOPPING_CAR % (request.user.id, courseid,)
 
             CONN.delete(key)
             ret.data = '删除成功'

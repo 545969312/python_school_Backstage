@@ -97,4 +97,9 @@ def index(request):
     #     for p in item.price_policy.all():
     #         print(p.price, p.valid_period)
 
+    obj = models.Account.objects.filter(id=1)
+    print(obj.couponrecord.number)
+
+
+
     return HttpResponse('ok')

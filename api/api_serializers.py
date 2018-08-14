@@ -23,7 +23,7 @@ class DegreeCourseSerializerA(serializers.ModelSerializer):
 
     class Meta:
         model = models.DegreeCourse
-        fields = ['name', 'teachers']
+        fields = '__all__'
 
     def get_teachers(self, row):
         teachers_list = row.teachers.all()
