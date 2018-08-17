@@ -70,12 +70,14 @@ class Settlement(ViewSetMixin, APIView):
                     valid_begin_date = value.get('valid_begin_date')
                     valid_end_date = value.get('valid_end_date')
                     coupon_type = value.get('coupon_type')
+                    default_coupon_id = value.get('default_coupon_id')
 
                     user_settlement_course_dic['brief'] = brief
                     user_settlement_course_dic['brief'] = brief
                     user_settlement_course_dic['valid_begin_date'] = valid_begin_date
                     user_settlement_course_dic['valid_end_date'] = valid_end_date
                     user_settlement_course_dic['coupon_type'] = coupon_type
+                    user_settlement_course_dic['default_coupon_id'] = default_coupon_id
 
                     dic[key] = user_settlement_course_dic
             dic['usable_balance'] = usable_balance
@@ -153,12 +155,13 @@ class Settlement(ViewSetMixin, APIView):
                         'valid_begin_date': coupon_record.coupon.valid_begin_date,
                         'valid_end_date': coupon_record.coupon.valid_end_date,
                         'object_id': coupon_record.coupon.object_id,
+                        'default_coupon_id': coupon_record.id,
                     }
 
                     coupon_dict[coupon_record.id] = temp
                 for coupon_record in global_coupon_list:
 
-                    temp = {
+                    temp2 = {
                         'brief': coupon_record.coupon.brief,
                         'coupon_type': coupon_record.coupon.coupon_type,
                         'money_equivalent_value': coupon_record.coupon.money_equivalent_value,
@@ -166,9 +169,10 @@ class Settlement(ViewSetMixin, APIView):
                         'minimum_consume': coupon_record.coupon.minimum_consume,
                         'valid_begin_date': coupon_record.coupon.valid_begin_date,
                         'valid_end_date': coupon_record.coupon.valid_end_date,
+                        'default_g_coupon_id': coupon_record.id,
                     }
 
-                    global_coupon_dict[coupon_record.id] = temp
+                    global_coupon_dict[coupon_record.id] = temp2
 
                 # 写入结算redis
                 coupon_bind_course_dic['course_detail_dict'] = course_detail_dict

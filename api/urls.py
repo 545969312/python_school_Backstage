@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from api.views import course, course_detail, query_all, shop_car, index, login, settlement
+from api.views import course, course_detail, query_all, shop_car, index, login, settlement, order
 
 urlpatterns = [
     url(r'login/$', login.Login.as_view({'post': 'login'})),
@@ -17,5 +17,10 @@ urlpatterns = [
                                                  })),
 
     url(r'settlement/$', settlement.Settlement.as_view({'get': 'list', 'post': 'create', 'put': 'update'})),
+    url(r'order/$', order.Order.as_view({'get': 'list',
+                                         'post': 'create',
+                                         'put': 'update',
+                                         'delete': 'destroy'
+                                         })),
 ]
 

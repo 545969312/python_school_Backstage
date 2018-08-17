@@ -376,6 +376,7 @@ class Account(models.Model):
         null=True
     )
     password = models.CharField('密码', max_length=128)
+    balance = models.FloatField(default=0)
 
     class Meta:
         verbose_name_plural = "用户"
