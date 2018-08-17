@@ -1,6 +1,8 @@
 from django.shortcuts import HttpResponse
 from api import models
 
+from django_redis import get_redis_connection
+CONN = get_redis_connection("default")
 
 def index(request, *args, **kwargs):
     # 获取用户ID = 1的所有优惠券
@@ -32,9 +34,12 @@ def index(request, *args, **kwargs):
     #     if cou.status == 0:
     #         print(cou.coupon.brief)
 
-    user_obj = models.Account.objects.filter(id=1).first()
-    coupon_obj = user_obj.values_list('couponrecord__coupon__brief')
-    print(coupon_obj)
+    # user_obj = models.Account.objects.filter(id=1).first()
+    # coupon_obj = user_obj.values_list('couponrecord__coupon__brief')
+    # print(coupon_obj)
+    key = 'settlement_1_%s' % '*'
+    list = CONN.keys(key)
+    print(CONN.hgetall(*list))
 
 
     return HttpResponse('ok')

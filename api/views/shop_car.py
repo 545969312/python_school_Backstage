@@ -13,7 +13,6 @@ from django_redis import get_redis_connection
 CONN = get_redis_connection("default")
 
 
-
 class ShopCar(ViewSetMixin, APIView):
 
     authentication_classes = [UserAuthentication, ]
@@ -35,12 +34,10 @@ class ShopCar(ViewSetMixin, APIView):
                     'name': CONN.hget(key, 'name').decode('utf-8'),
                     'img': CONN.hget(key, 'img').decode('utf-8'),
                     'default_price_id': CONN.hget(key, 'default_price_id').decode('utf-8'),
-                    'price_policy_dict': CONN.hget(key, 'price_policy_dict').decode('utf-8')
+                    'price_policy_dict': json.loads(CONN.hget(key, 'price_policy_dict').decode('utf-8'))
                 }
 
                 user_shop_course_list.append(temp)
-
-
 
             ret.data = user_shop_course_list
 
@@ -98,9 +95,9 @@ class ShopCar(ViewSetMixin, APIView):
         CONN.hset(key, 'name', course_obj.name)
         CONN.hset(key, 'img', course_obj.course_img)
         CONN.hset(key, 'default_price_id', price_policy_id)
-        CONN.hset(key, 'price_policy_dict', price_policy_dict)
+        CONN.hset(key, 'price_policy_dict', json.dumps(price_policy_dict))
 
-        CONN.expire(key, 20*60)
+        # CONN.expire(key, 20*60)
 
         return Response('添加到购物车成功')
 
@@ -118,11 +115,11 @@ class ShopCar(ViewSetMixin, APIView):
         """
         res = BaseResponse()
         try:
-            ret = request.data
-            course_id = ret.get('id')
-            price_policy_id = ret.get('price_policy_id')
-            # key = 'shopping_car_%s_%s' %(USER_ID,course_id,)
-            key = settings.LUFFY_SHOPPING_CAR % (request.user.id, course_id,)
+            course_id = request.data.get('id')
+            # 价格策略在字典中存在的id应该是str类型的
+            price_policy_id = str(request.data.get('price_policy_id'))
+
+            key = settings.SHOP_CAR % (request.user.id, course_id,)
 
             if not CONN.exists(key):
                 res.code = 10007
@@ -136,7 +133,7 @@ class ShopCar(ViewSetMixin, APIView):
                 return Response(res.dict)
 
             CONN.hset(key, 'default_price_id', price_policy_id)
-            CONN.expire(key, 20 * 60)
+            # CONN.expire(key, 20 * 60)
             res.data = '修改成功'
         except Exception as e:
             res.code = 10009
@@ -154,11 +151,11 @@ class ShopCar(ViewSetMixin, APIView):
         """
         ret = BaseResponse()
         try:
-            courseid = request.data.get('courseid')
+            course_id = request.data.get('id')
 
             # key = "shopping_car_%s_%s" % (USER_ID,courseid)
-            key = settings.LUFFY_SHOPPING_CAR % (request.user.id, courseid,)
-
+            key = settings.SHOP_CAR % (request.user.id, course_id,)
+            # shop_list = CONN.keys(pattern)
             CONN.delete(key)
             ret.data = '删除成功'
         except Exception as e:

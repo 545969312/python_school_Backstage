@@ -4,10 +4,24 @@ from api import models
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    sub_category = serializers.CharField(source='sub_category.name')
+    level = serializers.CharField(source='get_level_display')
+    course_type = serializers.CharField(source='get_course_type_display')
+    price_policy = serializers.SerializerMethodField()
+    asked_question = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Course
         fields = '__all__'
+
+    def get_price_policy(self, row):
+        price_list = row.price_policy.all()
+        return [{'price_policy_id': item.object_id, 'price': item.price, 'valid_period': item.valid_period} for item in
+                price_list]
+
+    def get_asked_question(self, row):
+        asked_question_list = row.asked_question.all()
+        return [{'answer': item.answer, 'question': item.question} for item in asked_question_list]
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
